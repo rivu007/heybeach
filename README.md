@@ -31,6 +31,12 @@ Refer to the Swagger UI for the API endpoints:
 http://localhost:8080/swagger-ui.html
 ```
 
+Sample request:
+```
+CURL -X GET -H "Authorization:<JsonWebToken>" "http://localhost:8080/users/me"
+```
+replace `<JsonWebToken>` with the token you get after successful login.
+
 ## Database Schema Design
 ![heybeach-dbschema](https://cloud.githubusercontent.com/assets/5902213/24600400/c45c854a-1854-11e7-8327-b4d71f32effc.jpg)
 
