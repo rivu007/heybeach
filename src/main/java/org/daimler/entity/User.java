@@ -28,7 +28,7 @@ public class User {
 
     @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
     @SequenceGenerator(name = "user_seq", sequenceName = "user_seq", allocationSize = 1)
     private Long id;
 
@@ -78,4 +78,11 @@ public class User {
             joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")})
     private List<Role> roles;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "USER_ADDRESS",
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
+            inverseJoinColumns = {@JoinColumn(name = "ADDRESS_ID", referencedColumnName = "ID")})
+    private List<Address> addresses;
 }

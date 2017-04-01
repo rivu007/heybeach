@@ -17,6 +17,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.daimler.security.JwtAuthenticationEntryPoint;
 import org.daimler.security.JwtAuthenticationTokenFilter;
 
+/**
+ * Spring security configurations.
+ * Please add your endpoints in the configure() to bypass security.
+ *
+ * @author Abhilash Ghosh
+ * @since 1.0.0
+ * @version 1.0.0
+ */
+
 @SuppressWarnings("SpringJavaAutowiringInspection")
 @Configuration
 @EnableWebSecurity
