@@ -1,0 +1,236 @@
+databaseChangeLog:
+- changeSet:
+    id: 1490991440000-19
+    author: abhilash.ghosh
+    changes:
+    - createTable:
+        tableName: order
+        columns:
+        - column:
+            name: id
+            type: BIGINT
+            autoIncrement: true
+        - column:
+            constraints:
+              nullable: false
+            name: total_order_price
+            type: DECIMAL
+        - column:
+            name: paid_date
+            type: TIMESTAMP WITH TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: order_status
+            type: varchar(10)
+        - column:
+            constraints:
+              nullable: false
+            name: transaction_id
+            type: varchar(20)
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: BIGINT
+        - column:
+            name: created_at
+            type: TIMESTAMP WITH TIME ZONE
+        - column:
+            name: last_updated
+            type: TIMESTAMP WITH TIME ZONE
+- changeSet:
+    id: 1490991440000-20
+    author: abhilash.ghosh
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: order_pk
+        tableName: order
+    - addUniqueConstraint:
+        columnNames: transaction_id
+        constraintName: uniqueconst_order_transaction_id
+        deferrable: true
+        disabled: true
+        initiallyDeferred: true
+        tableName: order
+    - createIndex:
+          columns:
+          - column:
+              name: user_id
+              type: BIGINT
+          indexName: idx_user_id
+          tableName: order
+          unique: false
+    - createIndex:
+          columns:
+          - column:
+              name: transaction_id
+              type: BIGINT
+          indexName: idx_transaction_id
+          tableName: order
+          unique: false
+- changeSet:
+    id: 1490991440000-21
+    author: abhilash.ghosh
+    changes:
+    - createTable:
+        tableName: order_item
+        columns:
+        - column:
+            name: id
+            type: BIGINT
+            autoIncrement: true
+        - column:
+            name: order_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: photo_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: quantity
+            type: SMALLINT
+        - column:
+            constraints:
+              nullable: false
+            name: comments
+            type: TEXT
+        - column:
+            name: created_at
+            type: TIMESTAMP WITH TIME ZONE
+        - column:
+            name: last_updated
+            type: TIMESTAMP WITH TIME ZONE
+- changeSet:
+    id: 1490991440000-22
+    author: abhilash.ghosh
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: order_item_pk
+        tableName: order_item
+    - addForeignKeyConstraint:
+        baseColumnNames: order_id
+        baseTableName: order_item
+        constraintName: fk_order_item_order_id
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: order
+    - createIndex:
+          columns:
+          - column:
+              name: order_id
+              type: BIGINT
+          indexName: idx_order_item_order_id
+          tableName: order_item
+          unique: false
+- changeSet:
+    id: 1490991440000-23
+    author: abhilash.ghosh
+    changes:
+    - createTable:
+        tableName: shipment
+        columns:
+        - column:
+            name: id
+            type: BIGINT
+            autoIncrement: true
+        - column:
+            name: order_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: tracking_number
+            type: BIGINT
+        - column:
+            name: shipment_Date
+            type: TIMESTAMP WITH TIME ZONE
+        - column:
+            name: comments
+            type: TEXT
+        - column:
+            name: created_at
+            type: TIMESTAMP WITH TIME ZONE
+        - column:
+            name: last_updated
+            type: TIMESTAMP WITH TIME ZONE
+- changeSet:
+    id: 1490991440000-24
+    author: abhilash.ghosh
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: shipment_pk
+        tableName: shipment
+    - addForeignKeyConstraint:
+        baseColumnNames: order_id
+        baseTableName: shipment
+        constraintName: fk_shipment_order_id
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: order
+    - createIndex:
+          columns:
+          - column:
+              name: order_id
+              type: BIGINT
+          indexName: idx_shipment_order_id
+          tableName: shipment
+          unique: false
+- changeSet:
+    id: 1490991440000-25
+    author: abhilash.ghosh
+    changes:
+    - createTable:
+        columns:
+        - column:
+            name: order_item_id
+            type: BIGINT
+        - column:
+            name: shipment_id
+            type: BIGINT
+        tableName: order_item_shipment
+- changeSet:
+    id: 1490991440000-26
+    author: abhilash.ghosh
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: order_item_id
+        baseTableName: order_item_shipment
+        constraintName: fk_order_item_shipment_order_item_id
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: order_item
+    - createIndex:
+          columns:
+          - column:
+              name: order_item_id
+              type: BIGINT
+          indexName: idx_order_item_shipment_user_id
+          tableName: order_item_shipment
+          unique: false
+    - addForeignKeyConstraint:
+        baseColumnNames: shipment_id
+        baseTableName: order_item_shipment
+        constraintName: fk_order_item_shipment_shipment_id
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: shipment
+    - createIndex:
+          columns:
+          - column:
+              name: shipment_id
+              type: BIGINT
+          indexName: idx_order_item_shipment_shipment_id
+          tableName: order_item_shipment
+          unique: false
+

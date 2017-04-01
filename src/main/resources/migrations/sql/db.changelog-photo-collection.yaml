@@ -1,0 +1,169 @@
+databaseChangeLog:
+- changeSet:
+    id: 1490991440000-9
+    author: abhilash.ghosh
+    changes:
+    - createTable:
+        tableName: photo
+        columns:
+        - column:
+            name: id
+            type: BIGINT
+            autoIncrement: true
+        - column:
+            constraints:
+              nullable: false
+            name: title
+            type: varchar(20)
+        - column:
+            constraints:
+              nullable: false
+            name: caption
+            type: varchar(255)
+        - column:
+            constraints:
+              nullable: false
+            name: file_path
+            type: varchar(255)
+        - column:
+            constraints:
+              nullable: false
+            name: filesize
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: width
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: height
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: approved
+            type: BOOLEAN
+        - column:
+            name: user_id
+            type: BIGINT
+        - column:
+            name: created_at
+            type: TIMESTAMP WITH TIME ZONE
+        - column:
+            name: last_updated
+            type: TIMESTAMP WITH TIME ZONE
+- changeSet:
+    id: 1490991440000-10
+    author: abhilash.ghosh
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: pk_photo_id
+        tableName: photo
+    - createIndex:
+          columns:
+          - column:
+              name: user_id
+              type: BIGINT
+          indexName: idx_user_id
+          tableName: photo
+          unique: false
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: photo
+        constraintName: fk_photo_user_user_id
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: user
+- changeSet:
+    id: 1490991440000-11
+    author: abhilash.ghosh
+    changes:
+    - createTable:
+        tableName: tag
+        columns:
+        - column:
+            name: id
+            type: BIGINT
+            autoIncrement: true
+        - column:
+            constraints:
+              constraints:
+                nullable: false
+                unique: true
+            name: name
+            type: varchar(20)
+        - column:
+            constraints:
+              constraints:
+                nullable: true
+            name: created_at
+            type: TIMESTAMP WITH TIME ZONE
+        - column:
+            constraints:
+              constraints:
+                nullable: true
+            name: last_updated
+            type: TIMESTAMP WITH TIME ZONE
+- changeSet:
+    id: 1490991440000-12
+    author: abhilash.ghosh
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: pk_tag_id
+        tableName: tag
+- changeSet:
+    id: 1490991440000-13
+    author: abhilash.ghosh
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: photo_id
+            type: BIGINT
+        - column:
+            name: tag_id
+            type: BIGINT
+        tableName: photo_tag
+- changeSet:
+    id: 1490991440000-14
+    author: abhilash.ghosh
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: photo_id
+        baseTableName: photo_tag
+        constraintName: fk_photo_tag_photo_id
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: photo
+    - createIndex:
+          columns:
+          - column:
+              name: photo_id
+              type: BIGINT
+          indexName: idx_photo_tag_photo_id
+          tableName: photo_tag
+          unique: false
+    - addForeignKeyConstraint:
+        baseColumnNames: tag_id
+        baseTableName: photo_tag
+        constraintName: fk_photo_tag_tag_id
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: tag
+    - createIndex:
+          columns:
+          - column:
+              name: tag_id
+              type: BIGINT
+          indexName: idx_photo_tag_tag_id
+          tableName: photo_tag
+          unique: false

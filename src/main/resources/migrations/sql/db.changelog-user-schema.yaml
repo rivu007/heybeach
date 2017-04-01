@@ -1,0 +1,143 @@
+databaseChangeLog:
+- changeSet:
+    id: 1490991440000-1
+    author: abhilash.ghosh
+    changes:
+    - createTable:
+        tableName: user
+        columns:
+        - column:
+            name: id
+            type: BIGINT
+            autoIncrement: true
+        - column:
+            constraints:
+              nullable: false
+            name: username
+            type: varchar(30)
+        - column:
+            constraints:
+              nullable: false
+            name: password
+            type: varchar(100)
+        - column:
+            constraints:
+              nullable: false
+            name: first_name
+            type: varchar(30)
+        - column:
+            constraints:
+              nullable: false
+            name: last_name
+            type: varchar(30)
+        - column:
+            constraints:
+              nullable: false
+            name: email_address
+            type: varchar(30)
+        - column:
+            name: enabled
+            type: boolean
+        - column:
+            name: lastpasswordresetdate
+            type: TIMESTAMP WITH TIME ZONE
+        - column:
+            name: created_at
+            type: TIMESTAMP WITH TIME ZONE
+        - column:
+            name: last_updated
+            type: TIMESTAMP WITH TIME ZONE
+- changeSet:
+    id: 1490991440000-2
+    author: abhilash.ghosh
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: user_pk
+        tableName: user
+    - addUniqueConstraint:
+        columnNames: username
+        constraintName: uniqueconst_user_username
+        deferrable: true
+        disabled: true
+        initiallyDeferred: true
+        tableName: user
+- changeSet:
+    id: 1490991440000-3
+    author: abhilash.ghosh
+    changes:
+    - createTable:
+        tableName: role
+        columns:
+        - column:
+            name: id
+            type: BIGINT
+            autoIncrement: true
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: varchar(20)
+        - column:
+            name: created_at
+            type: TIMESTAMP WITH TIME ZONE
+        - column:
+            name: last_updated
+            type: TIMESTAMP WITH TIME ZONE
+- changeSet:
+    id: 1490991440000-4
+    author: abhilash.ghosh
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: role_pk
+        tableName: role
+- changeSet:
+    id: 1490991440000-5
+    author: abhilash.ghosh
+    changes:
+    - createTable:
+        columns:
+        - column:
+            name: user_id
+            type: BIGINT
+        - column:
+            name: role_id
+            type: BIGINT
+        tableName: user_role
+- changeSet:
+    id: 1490991440000-6
+    author: abhilash.ghosh
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: user_role
+        constraintName: fk_user_role_user_id
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: user
+    - createIndex:
+          columns:
+          - column:
+              name: user_id
+              type: BIGINT
+          indexName: idx_user_role_user_id
+          tableName: user_role
+          unique: false
+    - addForeignKeyConstraint:
+        baseColumnNames: role_id
+        baseTableName: user_role
+        constraintName: fk_user_role_role_id
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: role
+    - createIndex:
+          columns:
+          - column:
+              name: role_id
+              type: BIGINT
+          indexName: idx_user_role_role_id
+          tableName: user_role
+          unique: false

@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "photo",
+    "description": "This collection stores photos of the user",
+    "type": "object",
+    "properties": {
+        "id": {
+            "description": "The unique identifier for a photo",
+            "type": "integer"
+        },
+        "title": {
+            "description": "Title of the photo",
+            "type": "string"
+        },
+        "caption": {
+            "description": "A brief description of the photo",
+            "type": "string"
+        },
+        "file_path": {
+            "description": "Path where the poto is stored. Can be NFS/s3",
+            "type": "string"
+        },
+        "filesize": {
+            "type": "number",
+            "description": "Photo size"
+            "minimum": 0
+        },
+        "width": {
+            "type": "number",
+            "description": "Width of the photo"
+            "minimum": 0
+        },
+        "height": {
+            "type": "number",
+            "description": "Height of the photo"
+            "minimum": 0
+        },
+        "approved": {
+            "type": "boolean",
+            "description": "Approval from the Admin user"
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "like_by": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            },
+            "uniqueItems": true
+        }
+    },
+    "required": ["id", "title", "file_path"]
+}

@@ -1,0 +1,118 @@
+databaseChangeLog:
+- changeSet:
+    id: 1490991440000-8
+    author: abhilash.ghosh
+    changes:
+    - insert:
+          tableName: user
+          columns:
+          - column:
+              name: username
+              type: varchar(30)
+              value: admin
+          - column:
+              name: password
+              type: varchar(100)
+              value: $2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi
+          - column:
+              name: first_name
+              type: varchar(30)
+              value: Admin
+          - column:
+              name: last_name
+              type: varchar(20)
+              value: admin
+          - column:
+              name: email_address
+              type: varchar(20)
+              value: admin@example.com
+          - column:
+              name: enabled
+              type: boolean
+              value: true
+          - column:
+              name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              value: NOW()
+          - column:
+              name: last_updated
+              type: TIMESTAMP WITH TIME ZONE
+              value: NOW()
+    - insert:
+          tableName: role
+          columns:
+          - column:
+              name: name
+              type: varchar(20)
+              value: ROLE_ADMIN
+          - column:
+              name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              value: NOW()
+          - column:
+              name: last_updated
+              type: TIMESTAMP WITH TIME ZONE
+              value: NOW()
+    - insert:
+          tableName: role
+          columns:
+          - column:
+              name: name
+              type: varchar(20)
+              value: ROLE_SELLER
+          - column:
+              name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              value: NOW()
+          - column:
+              name: last_updated
+              type: TIMESTAMP WITH TIME ZONE
+              value: NOW()
+    - insert:
+          tableName: role
+          columns:
+          - column:
+              name: name
+              type: varchar(20)
+              value: ROLE_BUYER
+          - column:
+              name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              value: NOW()
+          - column:
+              name: last_updated
+              type: TIMESTAMP WITH TIME ZONE
+              value: NOW()
+    - insert:
+          tableName: user_role
+          columns:
+          - column:
+              name: user_id
+              type: BIGINT
+              value: 1
+          - column:
+              name: role_id
+              type: BIGINT
+              value: 1
+    - insert:
+          tableName: user_role
+          columns:
+          - column:
+              name: user_id
+              type: BIGINT
+              value: 1
+          - column:
+              name: role_id
+              type: BIGINT
+              value: 2
+    - insert:
+          tableName: user_role
+          columns:
+          - column:
+              name: user_id
+              type: BIGINT
+              value: 1
+          - column:
+              name: role_id
+              type: BIGINT
+              value: 3
