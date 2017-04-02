@@ -21,10 +21,19 @@ public interface UserService {
      * Checks if user exists or not
      *
      * @param username to search for
-     * @return user with given username
+     * @return User with given username
      * @throws UserNotFoundException
      */
-    User exists(String username) throws UserNotFoundException;
+    User get(String username) throws UserNotFoundException;
+
+    /**
+     * Checks if user exists or not
+     *
+     * @param username to search for
+     * @return check if with given username exists
+     * @throws UserNotFoundException
+     */
+    boolean exists(String username) throws UserNotFoundException;
 
     /**
      * Delete a user by username

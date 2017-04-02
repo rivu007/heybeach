@@ -1,5 +1,8 @@
 package org.daimler.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import java.io.Serializable;
 
 /**
@@ -8,6 +11,9 @@ import java.io.Serializable;
 public class  JwtAuthenticationRequest implements Serializable {
 
     private static final long serialVersionUID = -8445943548965154778L;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private String username;
     private String password;

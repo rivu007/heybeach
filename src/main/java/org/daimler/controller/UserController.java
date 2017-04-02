@@ -3,6 +3,7 @@ package org.daimler.controller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.daimler.entity.user.User;
+import org.daimler.error.EntityAlreadyExistsException;
 import org.daimler.error.EntityPersistenceException;
 import org.daimler.error.UnknownResourceException;
 import org.daimler.error.UserNotFoundException;
@@ -14,10 +15,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -64,7 +65,10 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(CREATED)
-    public User registration(@Valid @RequestBody final User user) throws EntityPersistenceException {
+    public User registration(@Valid @RequestBody final User user) throws UserNotFoundException, EntityAlreadyExistsException, EntityPersistenceException {
+        if(userService.exists(user.getUsername())){
+            throw new EntityAlreadyExistsException("User with username "+ user.getUsername() + " already exists");
+        }
         String password = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(password);
         return userService.save(user);
@@ -90,8 +94,7 @@ public class UserController {
     @Secured({"ROLE_ADMIN"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("username") String username) throws UnknownResourceException, EntityPersistenceException {
-        User userToBeDeleted = userService.exists(username);
-
+        User userToBeDeleted = userService.get(username);
         if(userToBeDeleted == null) {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }
@@ -100,7 +103,7 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/login")
-    public ResponseEntity<?> login(HttpServletRequest request, @RequestBody JwtAuthenticationRequest authenticationRequest, Device device) throws AuthenticationException {
+    public ResponseEntity<?> login(HttpServletRequest request, @RequestBody JwtAuthenticationRequest authenticationRequest, Device device) throws AccessDeniedException {
         UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 
         if (userDetails == null) {

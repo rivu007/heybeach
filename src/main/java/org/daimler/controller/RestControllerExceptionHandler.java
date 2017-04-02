@@ -6,6 +6,8 @@ import org.daimler.error.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -53,8 +55,21 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
      * @see AuthenticationException
      */
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Object> handleUnauthorizedContent(Exception ex, WebRequest request) {
+    public ResponseEntity<Object> handleUnauthorizedContent(AuthenticationException ex, WebRequest request) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+        RestError error = new RestError(status, ex.getMessage());
+        return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
+    }
+
+    /**
+     * Handles the following exceptions:
+     *
+     * @see AccessDeniedException
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleRestrictedContent(AccessDeniedException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
 
         RestError error = new RestError(status, ex.getMessage());
         return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
@@ -70,6 +85,32 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         HttpStatus status = HttpStatus.BAD_REQUEST;
         RestError error = new RestError(status, "Error occurred while saving the entity", ex.getMessage());
 
+        return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
+    }
+
+    /**
+     * This is generic method which handles:
+     *
+     * @see EntityAlreadyExistsException
+     */
+    @ExceptionHandler(EntityAlreadyExistsException.class)
+    public ResponseEntity<Object> handleEntityAlreadyExistsException(EntityAlreadyExistsException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+
+        RestError error = new RestError(status, ex.getMessage());
+        return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
+    }
+
+    /**
+     * This is generic method which handles:
+     *
+     * @see EntityAlreadyExistsException
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Object> handleBadCredentialException(BadCredentialsException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        RestError error = new RestError(status, ex.getMessage());
         return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
     }
 
@@ -93,7 +134,7 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
                                                                   WebRequest request) {
         status = HttpStatus.BAD_REQUEST;
 
-        RestError error = new RestError(status, "Error occurred",
+        RestError error = new RestError(status, "Validation failed",
                 ex.getBindingResult().getFieldErrors().stream()
                         .map(FieldError::new)
                         .collect(Collectors.toList())
