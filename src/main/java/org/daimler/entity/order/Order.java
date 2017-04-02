@@ -6,6 +6,7 @@ import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ import java.util.Set;
 @Entity
 @Data
 @Table(name = "ORDER")
-public class Order {
+public class Order implements Serializable {
 
     @Id
     @Column(name = "ID", nullable = false, unique = true)

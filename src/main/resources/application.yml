@@ -13,15 +13,13 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+    properties:
+      hibernate.current_session_context_class: org.springframework.orm.hibernate4.SpringSessionContext
 
 jwt:
   header: Authorization
   secret: mySecret
   expiration: 6000
-  route:
-    authentication:
-      path: auth
-      refresh: refresh
 
 # Spring-boot actuator endpoints
 management:
@@ -36,20 +34,15 @@ server:
 # Liquibase change-log path containing the migrations
 liquibase:
   change-log: classpath:/migrations/sql/db.changelog-master.yaml
-
-#logging:
-#  level:
-#    org.springframework:
-#      security: DEBUG
 ---
 # <----- Development profile ------>
 spring:
   profiles: development
   datasource:
-        driverClassName: org.h2.Driver
-        url: jdbc:h2:~/heybeachdb
-        username: sa
-        password:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:~/heybeachdb
+    username: sa
+    password:
 
 ---
 # <----- Production profile ------>
@@ -57,8 +50,8 @@ spring:
   profiles: production
   datasource:
     url: jdbc:postgresql://xxxx/heybeach # Replace xxxx with database hostname
-    username: xxxxx
-    password: xxxxx
+    username: xxxxx                      # Replace xxxx with database username
+    password: xxxxx                      # Replace xxxx with database password
 
 ---
 # <----- test profile ------>
@@ -66,10 +59,10 @@ spring:
   profiles: test
 
   datasource:
-        driverClassName: org.h2.Driver
-        url: jdbc:h2:~/heybeachdb
-        username: sa
-        password:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:~/heybeachtestdb;AUTO_SERVER=TRUE
+    username: sa
+    password:
 
 jwt:
   header: Authorization

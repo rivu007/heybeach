@@ -1,7 +1,9 @@
 package org.daimler.entity.user;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.util.*;
 
 import javax.persistence.*;
@@ -16,7 +18,8 @@ import javax.validation.constraints.Size;
 @Entity
 @Data
 @Table(name = "USER")
-public class User {
+@EqualsAndHashCode(exclude = {"createdAt","lastUpdated"})
+public class User implements Serializable {
 
     @Id
     @Column(name = "ID")

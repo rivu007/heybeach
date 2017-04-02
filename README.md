@@ -17,7 +17,7 @@ When a user purchases their desired picture, they will receive a physical print 
 
 ## Getting it running
 1. Clone this project. Use `git clone https://github.com/rivu007/heybeach.git`
-2. Run `mvn spring-boot:run` at the root of the repository, where the pom.xml file is located.
+2. Run `mvn clean spring-boot:run` at the root of the repository, where the pom.xml file is located.
 3. The application will be running at [http://localhost:8080](http://localhost:8080)!
 
 There is one admin user accounts present to demonstrate the different levels of access to the endpoints in

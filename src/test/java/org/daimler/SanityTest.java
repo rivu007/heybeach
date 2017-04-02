@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author abhilash.ghosh
  */
 @SuppressWarnings("SpringJavaAutowiredMembersInspection")
-public class HealthCheckTest extends BaseTest {
+public class SanityTest extends BaseTest {
 
     @Test
     public void healthCheck_exists_true() throws Exception {
@@ -22,6 +22,12 @@ public class HealthCheckTest extends BaseTest {
     @Test
     public void appInfo_exists_true() throws Exception {
         mvc.perform(get("/app/info"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void swaggerUI_exists_true() throws Exception {
+        mvc.perform(get("/swagger-ui.html"))
                 .andExpect(status().isOk());
     }
 

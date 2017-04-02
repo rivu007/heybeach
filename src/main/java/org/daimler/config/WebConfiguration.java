@@ -4,6 +4,8 @@ import org.h2.server.web.WebServlet;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.jpa.vendor.HibernateJpaSessionFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -17,6 +19,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  */
 @Configuration
 @EnableWebMvc
+@EnableTransactionManagement
 public class WebConfiguration extends WebMvcConfigurerAdapter {
 
     @Bean
@@ -24,6 +27,11 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(new WebServlet());
         registrationBean.addUrlMappings("/console/*");
         return registrationBean;
+    }
+
+    @Bean
+    public HibernateJpaSessionFactoryBean sessionFactory() {
+        return new HibernateJpaSessionFactoryBean();
     }
 
     @Override

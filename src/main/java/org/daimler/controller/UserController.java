@@ -59,7 +59,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @RequestMapping(method = RequestMethod.GET, path = "/{username}")
     @ResponseBody
-    public JwtUser get(@PathVariable("username") String username) throws UserNotFoundException {
+    public JwtUser get(@RequestParam("username") String username) throws UserNotFoundException {
         return (JwtUser) userDetailsService.loadUserByUsername(username);
     }
 
@@ -84,7 +84,7 @@ public class UserController {
         if (userToBeUpdated == null) {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }
-        if (userToBeUpdated != userService.getLoggedInUser()) {
+        if (userToBeUpdated.getUsername() != userService.getLoggedInUser().getUsername()){
             throw new AccessDeniedException("User: " + userToBeUpdated.getUsername()
                     + " doesn't have privilege to update other user: "
                     + userService.getLoggedInUser().getUsername()
@@ -105,7 +105,7 @@ public class UserController {
         if (userToBeDeleted == null) {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }
-        if (userToBeDeleted != userService.getLoggedInUser()) {
+        if (userToBeDeleted.getUsername() != userService.getLoggedInUser().getUsername()){
             throw new AccessDeniedException("User: " + userToBeDeleted.getUsername()
                     + " doesn't have privilege to delete other user: "
                     + userService.getLoggedInUser().getUsername()
