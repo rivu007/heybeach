@@ -22,9 +22,8 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="ORDER_ID")
-    private Order orderId;
+    @Column(name="ORDER_ID", nullable = false)
+    private Long orderId;
 
     @Column(name = "PHOTO_ID")
     @NotNull

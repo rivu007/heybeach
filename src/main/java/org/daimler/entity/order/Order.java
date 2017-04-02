@@ -52,6 +52,11 @@ public class Order {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdated;
 
-    @OneToMany(mappedBy="orderId", fetch = FetchType.LAZY)
+    @OneToMany()
+    @JoinColumn(name="ORDER_ID", referencedColumnName="ID")
     private Set<OrderItem> orderItems;
+
+    @OneToMany()
+    @JoinColumn(name="ORDER_ID", referencedColumnName="ID")
+    private Set<Shipment> shipments;
 }

@@ -23,6 +23,9 @@ public class Shipment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "ORDER_ID")
+    private Long orderId;
+
     @Column(name = "TRACKING_NUMBER", nullable = false, unique = true)
     @NotNull
     private Long trackingNumber;
