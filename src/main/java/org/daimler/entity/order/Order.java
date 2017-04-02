@@ -52,6 +52,6 @@ public class Order {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdated;
 
-    @OneToMany(mappedBy="orderId")
+    @OneToMany(mappedBy="orderId", fetch = FetchType.LAZY)
     private Set<OrderItem> orderItems;
 }

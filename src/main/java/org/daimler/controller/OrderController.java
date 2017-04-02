@@ -1,13 +1,18 @@
 package org.daimler.controller;
 
 import org.daimler.entity.order.Order;
+import org.daimler.entity.order.OrderItem;
 import org.daimler.entity.order.OrderStatus;
 import org.daimler.error.EntityPersistenceException;
+import org.daimler.error.ItemNotFoundException;
 import org.daimler.error.OrderNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -35,6 +40,14 @@ public class OrderController {
                 ", orderItems=" + "1" +
                 '}'; */
         return new Order();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/all")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
+    public Set<Order> list() throws OrderNotFoundException {
+        //TODO: Implement the logic for listing all orders by pageNumber
+        return new HashSet<Order>();
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -76,5 +89,14 @@ public class OrderController {
 
         //TODO: implement the logic
         return new Order().getOrderStatus();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "{orderId}/items")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
+    public Set<OrderItem> orderDetails(@RequestParam("orderId") Long orderId) throws ItemNotFoundException, OrderNotFoundException {
+
+        //TODO: implement the logic
+        return new Order().getOrderItems();
     }
 }
