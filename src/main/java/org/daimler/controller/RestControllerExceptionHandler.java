@@ -26,6 +26,15 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
 
     private static final Log LOG = LogFactory.getLog(RestControllerExceptionHandler.class);
 
+    /**
+     * Handles the following exceptions:
+     *
+     * @see UsernameNotFoundException
+     * @see UserNotFoundException
+     * @see OrderNotFoundException
+     * @see ItemNotFoundException
+     * @see UnknownResourceException
+     */
     @ExceptionHandler({UsernameNotFoundException.class,
                        UserNotFoundException.class,
                        OrderNotFoundException.class,
@@ -38,6 +47,11 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
     }
 
+    /**
+     * Handles the following exceptions:
+     *
+     * @see AuthenticationException
+     */
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Object> handleUnauthorizedContent(Exception ex, WebRequest request) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
@@ -46,19 +60,27 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
     }
 
-    @ExceptionHandler({RuntimeException.class})
-    public ResponseEntity<Object> handleInternalServerException(RuntimeException ex, WebRequest request) {
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-
-        RestError error = new RestError(status, ex.getMessage());
-        return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
-    }
-
+    /**
+     * Handles the following exceptions:
+     *
+     * @see EntityPersistenceException
+     */
     @ExceptionHandler({EntityPersistenceException.class})
     public ResponseEntity<Object> handleEntityPersistenceProcessing(EntityPersistenceException ex, WebRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         RestError error = new RestError(status, "Error occurred while saving the entity", ex.getMessage());
 
+        return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
+    }
+
+    /**
+     * This is generic method which handles @see RuntimeException
+     */
+    @ExceptionHandler({RuntimeException.class})
+    public ResponseEntity<Object> handleInternalServerException(RuntimeException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        RestError error = new RestError(status, ex.getMessage());
         return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
     }
 
@@ -102,63 +124,4 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
 
         return new RestError(status, ex.getMessage());
     }
-
-    /*@ExceptionHandler({RuntimeException.class})
-    public ResponseEntity<Object> handleExceptionInternal(RuntimeException ex, WebRequest request) {
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-
-         error = new RestError(status, ex.getMessage());
-        RestErrorreturn handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
-    }
-
-    @ExceptionHandler({EntityPersistenceException.class})
-    public ResponseEntity<Object> handleEntityPersistenceProcessing(EntityPersistenceException ex, WebRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        RestError error = new RestError(status, "Validation failed", ex.getMessage());
-
-        return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
-    }
-
-    @ExceptionHandler({JsonEntityProcessingException.class})
-    public ResponseEntity<Object> handleJsonEntityProcessing(JsonEntityProcessingException ex, WebRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-
-        RestError error = new RestError(status, "Validation failed",
-                stream(ex.getMessages().spliterator(), false)
-                        .map(FieldError::new)
-                        .collect(Collectors.toList())
-        );
-
-        return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
-    }
-
-    @ExceptionHandler(DataMismatchException.class)
-    public ResponseEntity<Object> handleIdMismatch(DataMismatchException ex, WebRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-
-        Map<String, Object> details = new HashMap<>();
-        details.put("expected", ex.getExpected());
-        details.put("given", ex.getGiven());
-
-        RestError error = new RestError(status, ex.getMessage(), details);
-        return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                                  HttpHeaders headers,
-                                                                  HttpStatus status,
-                                                                  WebRequest request) {
-        status = HttpStatus.BAD_REQUEST;
-
-        RestError error = new RestError(status, "Validation failed",
-                ex.getBindingResult().getFieldErrors().stream()
-                        .map(FieldError::new)
-                        .collect(Collectors.toList())
-        );
-
-        return handleExceptionInternal(ex, error, headers, status, request);
-    }
-
-    */
 }
