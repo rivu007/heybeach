@@ -2,7 +2,7 @@ package org.daimler.controller;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.daimler.entity.User;
+import org.daimler.entity.user.User;
 import org.daimler.error.EntityPersistenceException;
 import org.daimler.error.UnknownResourceException;
 import org.daimler.error.UserNotFoundException;

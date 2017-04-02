@@ -1,4 +1,4 @@
-package org.daimler.entity;
+package org.daimler.entity.user;
 
 import lombok.Data;
 
@@ -8,15 +8,19 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Relates to user's address. Typically a user can have more than one addresses
+ *
+ * @author Abhilash Ghosh
+ */
 @Entity
 @Data
 @Table(name = "Address")
 public class Address {
 
     @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_seq")
-    @SequenceGenerator(name = "address_seq", sequenceName = "address_seq", allocationSize = 1)
+    @Column(name = "ID", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "STREET_NAME", length = 20)
@@ -39,9 +43,7 @@ public class Address {
     @Size(max = 20)
     private String country;
 
-    @Column(name = "LANDMARK", length = 20)
-    @NotNull
-    @Size(max = 100)
+    @Column(name = "LANDMARK")
     private String landmark;
 
     @Column(name = "CREATED_AT")

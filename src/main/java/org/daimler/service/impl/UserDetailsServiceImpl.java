@@ -1,6 +1,6 @@
 package org.daimler.service.impl;
 
-import org.daimler.entity.User;
+import org.daimler.entity.user.User;
 import org.daimler.error.EntityPersistenceException;
 import org.daimler.error.UserNotFoundException;
 import org.daimler.security.JwtUserFactory;

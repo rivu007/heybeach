@@ -1,7 +1,7 @@
 package org.daimler.security.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.daimler.entity.User;
+import org.daimler.entity.user.User;
 
 import java.util.Optional;
 

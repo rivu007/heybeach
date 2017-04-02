@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.daimler.entity.Role;
-import org.daimler.entity.User;
+import org.daimler.entity.user.Role;
+import org.daimler.entity.user.User;
 
 public final class JwtUserFactory {
 

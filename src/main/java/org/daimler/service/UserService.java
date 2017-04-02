@@ -1,11 +1,8 @@
 package org.daimler.service;
 
-import org.daimler.entity.User;
+import org.daimler.entity.user.User;
 import org.daimler.error.EntityPersistenceException;
 import org.daimler.error.UserNotFoundException;
-
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * @author abhilash.ghosh

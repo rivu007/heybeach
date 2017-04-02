@@ -1,4 +1,4 @@
-package org.daimler.entity;
+package org.daimler.entity.user;
 
 import lombok.Data;
 
