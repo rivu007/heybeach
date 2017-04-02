@@ -35,7 +35,7 @@ $(function () {
                 setJwtToken(data.token);
                 $login.hide();
                 $notLoggedIn.hide();
-                showTokenInformation()
+                showTokenInformation();
                 showUserInformation();
             },
             error: function (jqXHR, textStatus, errorThrown) {

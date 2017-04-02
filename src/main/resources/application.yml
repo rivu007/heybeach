@@ -1,3 +1,5 @@
+# All the generic configuration goes here. By default the active profile is 'development'.
+# To override specific profile please pass '-Dspring.profiles.active=production' as VM args
 spring:
   profiles:
     active: development
@@ -35,13 +37,37 @@ server:
 liquibase:
   change-log: classpath:/migrations/sql/db.changelog-master.yaml
 
+#logging:
+#  level:
+#    org.springframework:
+#      security: DEBUG
+---
+# <----- Development profile ------>
+spring:
+  profiles: development
+
 datasource:
       driverClassName: org.h2.Driver
       url: jdbc:h2:~/heybeachdb
       username: sa
       password:
 
-#logging:
-#  level:
-#    org.springframework:
-#      security: DEBUG
+---
+# <----- Production profile ------>
+spring:
+  profiles: production
+  datasource:
+    url: jdbc:postgresql://xxxx/heybeach # Replace xxxx with database hostname
+    username: xxxxx
+    password: xxxxx
+
+---
+# <----- test profile ------>
+spring:
+  profiles: test
+
+datasource:
+      driverClassName: org.h2.Driver
+      url: jdbc:h2:~/heybeachdb
+      username: sa
+      password:

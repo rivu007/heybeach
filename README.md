@@ -8,7 +8,7 @@ When a user purchases their desired picture, they will receive a physical print 
 
 ## Technology Stack
  - Java8
- - Spring security
+ - Spring Boot and security
  - json web token
  - H2 as dev/test db
  - Liquibase for database migrations. Change can be found under `resources/migrations`
@@ -24,6 +24,11 @@ There is one admin user accounts present to demonstrate the different levels of 
 the API:
 ```
 Admin - admin:admin
+```
+
+To run test:
+```
+mvn clean test
 ```
 
 Refer to the Swagger UI for the API endpoints:
