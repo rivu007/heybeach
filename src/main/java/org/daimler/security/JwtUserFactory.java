@@ -1,6 +1,7 @@
 package org.daimler.security;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -27,9 +28,9 @@ public final class JwtUserFactory {
         );
     }
 
-    private static List<GrantedAuthority> mapToGrantedAuthorities(List<Role> roles) {
+    private static Set<GrantedAuthority> mapToGrantedAuthorities(Set<Role> roles) {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 }

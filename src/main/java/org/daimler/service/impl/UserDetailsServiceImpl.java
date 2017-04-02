@@ -7,6 +7,8 @@ import org.daimler.security.JwtUserFactory;
 import org.daimler.security.repository.UserRepository;
 import org.daimler.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -33,7 +35,12 @@ public class UserDetailsServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public boolean exists(String username) throws UserNotFoundException {
+    public User update(User user) throws EntityPersistenceException {
+        return null;
+    }
+
+    @Override
+    public boolean exists(String username) {
         return userRepository.findByUsername(username).isPresent();
     }
 
@@ -53,5 +60,11 @@ public class UserDetailsServiceImpl implements UserService, UserDetailsService {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
                 .stream()
                 .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+    @Override
+    public User getLoggedInUser() throws UserNotFoundException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return get(authentication.getName());
     }
 }

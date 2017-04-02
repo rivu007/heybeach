@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,8 +56,8 @@ public class UserController {
 
     private final Log logger = LogFactory.getLog(this.getClass());
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @RequestMapping(method = RequestMethod.GET, path = "/{username}")
-    @Secured({"ROLE_ADMIN"})
     @ResponseBody
     public JwtUser get(@PathVariable("username") String username) throws UserNotFoundException {
         return (JwtUser) userDetailsService.loadUserByUsername(username);
@@ -66,54 +66,63 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(CREATED)
     public User registration(@Valid @RequestBody final User user) throws UserNotFoundException, EntityAlreadyExistsException, EntityPersistenceException {
-        if(userService.exists(user.getUsername())){
-            throw new EntityAlreadyExistsException("User with username "+ user.getUsername() + " already exists");
+        if (userService.exists(user.getUsername())) {
+            throw new EntityAlreadyExistsException("User with username " + user.getUsername() + " already exists");
         }
         String password = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(password);
         return userService.save(user);
     }
 
-    @RequestMapping(method = PUT)
-    @Secured({"ROLE_ADMIN","ROLE_SELLER","ROLE_BUYER"})
+    @PreAuthorize("isAuthenticated()")
+    @RequestMapping(method = PUT, path = "/{username}")
     @ResponseBody
-    public User update(@SuppressWarnings("UnusedParameters") HttpServletRequest request, @RequestBody @Valid final User user)
+    public User update(@PathVariable("username") String username, @RequestBody @Valid final User user)
             throws EntityPersistenceException, UnknownResourceException {
 
-        String token = request.getHeader(tokenHeader);
-        String username = jwtTokenUtil.getUsernameFromToken(token);
-
-        if (!userService.isAdminUser() && !username.equals(user.getUsername())) {
-            throw new UnknownResourceException("OperationNotAllowed for user:"+ username +". Only admin user have privileges to modify other user profile");
+        User userToBeUpdated = userService.get(username);
+        if (userToBeUpdated == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }
-
+        if (userToBeUpdated != userService.getLoggedInUser()) {
+            throw new AccessDeniedException("User: " + userToBeUpdated.getUsername()
+                    + " doesn't have privilege to update other user: "
+                    + userService.getLoggedInUser().getUsername()
+            );
+        }
+        if (user.getId() == null) {
+            user.setId(userToBeUpdated.getId());
+        }
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userService.save(user);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping(method = RequestMethod.DELETE, path = "/{username}")
-    @Secured({"ROLE_ADMIN"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("username") String username) throws UnknownResourceException, EntityPersistenceException {
         User userToBeDeleted = userService.get(username);
-        if(userToBeDeleted == null) {
+        if (userToBeDeleted == null) {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }
-
+        if (userToBeDeleted != userService.getLoggedInUser()) {
+            throw new AccessDeniedException("User: " + userToBeDeleted.getUsername()
+                    + " doesn't have privilege to delete other user: "
+                    + userService.getLoggedInUser().getUsername()
+            );
+        }
         userService.delete(userToBeDeleted);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/login")
     public ResponseEntity<?> login(HttpServletRequest request, @RequestBody JwtAuthenticationRequest authenticationRequest, Device device) throws AccessDeniedException {
         UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-
         if (userDetails == null) {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", authenticationRequest.getUsername()));
         }
-
         if (!bCryptPasswordEncoder.matches(authenticationRequest.getPassword(), userDetails.getPassword())) {
             throw new BadCredentialsException("Password mismatch! Please verify your password");
         }
-
         final String token = jwtTokenUtil.generateToken(userDetails, device);
 
         // Perform the security
@@ -126,8 +135,8 @@ public class UserController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping(method = RequestMethod.GET, path = "/me")
-    @Secured({"ROLE_ADMIN","ROLE_SELLER","ROLE_BUYER"})
     @ResponseBody
     public JwtUser getAuthenticatedUser(HttpServletRequest request) {
         String token = request.getHeader(tokenHeader);

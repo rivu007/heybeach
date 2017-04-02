@@ -86,6 +86,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
 
+        // enable X-Frame from same origin used by H2 UI
+        httpSecurity
+                .headers().frameOptions().sameOrigin();
+
         // disable page caching
         httpSecurity.headers().cacheControl().disable();
     }

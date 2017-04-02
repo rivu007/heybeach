@@ -13,13 +13,18 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-            name: stree_name
+            name: street_name
             type: varchar(20)
         - column:
             constraints:
               nullable: false
-            name: stree_number
+            name: street_number
             type: SMALLINT
+        - column:
+            constraints:
+              nullable: false
+            name: city
+            type: varchar(20)
         - column:
             constraints:
               nullable: false

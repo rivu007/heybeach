@@ -1,21 +1,36 @@
 package org.daimler.controller;
 
 import org.daimler.BaseTest;
+import org.daimler.entity.user.Role;
+import org.daimler.entity.user.RoleName;
 import org.daimler.entity.user.User;
+import org.daimler.error.EntityPersistenceException;
+import org.daimler.error.ResourceNotFoundException;
 import org.daimler.security.JwtAuthenticationRequest;
+import org.daimler.security.JwtTokenUtil;
 import org.daimler.security.repository.UserRepository;
+import org.daimler.service.RoleService;
+import org.daimler.service.UserService;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MvcResult;
+
+import javax.persistence.EntityManager;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,12 +42,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SuppressWarnings("SpringJavaAutowiredMembersInspection")
 public class UserControllerTest extends BaseTest {
 
+    @Value("${jwt.header}")
+    private String JWTHeader;
+
+    @Value("${jwt.expiration}")
+    private int JWTExpiryInterval;
+
+    @Autowired
+    EntityManager entityManager;
+
     @Autowired
     UserRepository userRepository;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
+    RoleService roleService;
+
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Before
+    public void init() {
+        ReflectionTestUtils.setField(jwtTokenUtil, "expiration", 3600000L);
+        ReflectionTestUtils.setField(jwtTokenUtil, "secret", "mySecret");
+    }
     /**
      * Clean up the table once the tests are done.
      */
@@ -216,7 +254,7 @@ public class UserControllerTest extends BaseTest {
         user.setFirstname("test");
         user.setLastname("user");
         user.setEnabled(true);
-        userRepository.save(user);
+        userService.save(user);
 
         JwtAuthenticationRequest request = new JwtAuthenticationRequest();
         request.setUsername("test");
@@ -237,5 +275,175 @@ public class UserControllerTest extends BaseTest {
                 get("/users/me")
         )
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getAuthenticatedUser_withValidJWTToken_success() throws Exception {
+        User user = createTestUser("test-user");
+
+        final Map<String, Object> claims = createClaims(user.getUsername());
+        String JWTToken = jwtTokenUtil.generateToken(claims);
+
+        MvcResult result = mvc.perform(
+                get("/users/me")
+                .header(JWTHeader, JWTToken)
+        )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        User returnedUser = mapper.readValue(response, User.class);
+
+        assertEquals(user.getUsername(), returnedUser.getUsername());
+        assertEquals(user.getFirstname(), returnedUser.getFirstname());
+    }
+
+    @Test
+    public void update_userTryingToUpdateAnotherUserThatDoesnotExists_badRequest() throws Exception {
+        User user = createTestUser("user1");
+
+        final Map<String, Object> claims = createClaims(user.getUsername());
+        String JWTToken = jwtTokenUtil.generateToken(claims);
+
+        mvc.perform(
+                put("/users/{username}", user.getUsername())
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .header(JWTHeader, JWTToken)
+                        .content(jsonOf(new User()))
+        )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is("BAD_REQUEST")))
+                .andExpect(jsonPath("$.message", is("Validation failed")));
+    }
+
+    @Test
+    public void update_oneUserTryingToUpdateAnotherUser_forbidden() throws Exception {
+        User user1 = createTestUser("user1");
+
+        User toBeUpdatedUser = new User();
+        toBeUpdatedUser.setUsername("updated-user");
+        toBeUpdatedUser.setPassword(bCryptPasswordEncoder.encode("password"));
+        toBeUpdatedUser.setEmailAddress("abc@example.com");
+        toBeUpdatedUser.setFirstname("test");
+        toBeUpdatedUser.setLastname("user");
+        toBeUpdatedUser.setEnabled(true);
+        userService.save(toBeUpdatedUser);
+
+        final Map<String, Object> claims = createClaims(user1.getUsername());
+        String JWTToken = jwtTokenUtil.generateToken(claims);
+
+        mvc.perform(
+                put("/users/{username}", toBeUpdatedUser.getUsername())
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .header(JWTHeader, JWTToken)
+                        .content(jsonOf(toBeUpdatedUser))
+        )
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.status", is("FORBIDDEN")))
+                .andExpect(jsonPath("$.message", is("User: " + toBeUpdatedUser.getUsername() + " doesn't have privilege to update other user: " + user1.getUsername())));
+    }
+
+    @Test
+    public void update_validData_success() throws Exception {
+        User user = createTestUser("user");
+
+        assertEquals("test", user.getFirstname());
+        assertEquals("abc@example.com", user.getEmailAddress());
+
+        User toBeUpdatedUser = new User();
+        toBeUpdatedUser.setId(user.getId());
+        toBeUpdatedUser.setUsername(user.getUsername());
+        toBeUpdatedUser.setPassword(bCryptPasswordEncoder.encode("password"));
+        toBeUpdatedUser.setEmailAddress("emailUpdated@example.com");
+        toBeUpdatedUser.setFirstname("firstname-updated");
+        toBeUpdatedUser.setLastname("lastname-updated");
+        toBeUpdatedUser.setEnabled(true);
+
+        final Map<String, Object> claims = createClaims(user.getUsername());
+        String JWTToken = jwtTokenUtil.generateToken(claims);
+
+        MvcResult result = mvc.perform(
+                put("/users/{username}", user.getUsername())
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .header(JWTHeader, JWTToken)
+                        .content(jsonOf(toBeUpdatedUser))
+        )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        User updatedUser = mapper.readValue(response, User.class);
+
+        assertEquals("firstname-updated", updatedUser.getFirstname());
+        assertEquals("emailUpdated@example.com", updatedUser.getEmailAddress());
+    }
+
+    @Test
+    public void delete_userTryingToDeleteAnotherUserThatDoesnotExists_UsernameNotFoundException() throws Exception {
+        User user1 = createTestUser("user1");
+
+        final Map<String, Object> claims = createClaims(user1.getUsername());
+        String JWTToken = jwtTokenUtil.generateToken(claims);
+
+        mvc.perform(
+                delete("/users/{username}", "non-existence-user")
+                        .header(JWTHeader, JWTToken)
+        )
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void delete_oneUserTryingToDeleteAnotherUser_forbidden() throws Exception {
+        User user1 = createTestUser("user1");
+        User user2 = createTestUser("user2");
+
+        final Map<String, Object> claims = createClaims(user1.getUsername());
+        String JWTToken = jwtTokenUtil.generateToken(claims);
+
+        mvc.perform(
+                delete("/users/{username}", user2.getUsername())
+                        .header(JWTHeader, JWTToken)
+        )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void delete_withValidData_success() throws Exception {
+        User userToBeDeleted = createTestUser("user1");
+
+        final Map<String, Object> claims = createClaims(userToBeDeleted.getUsername());
+        String JWTToken = jwtTokenUtil.generateToken(claims);
+
+        assertTrue(userService.exists(userToBeDeleted.getUsername()));
+
+        mvc.perform(
+                delete("/users/{username}", userToBeDeleted.getUsername())
+                        .header(JWTHeader, JWTToken)
+        )
+                .andExpect(status().isNoContent());
+
+        assertFalse(userService.exists(userToBeDeleted.getUsername()));
+    }
+
+    private Map<String, Object> createClaims(String username) {
+        Map<String, Object> claims = new HashMap();
+        claims.put("sub", username);
+        claims.put("audience", "testAudience");
+        claims.put("created", LocalDateTime.now().plusSeconds(JWTExpiryInterval));
+        return claims;
+    }
+
+    private User createTestUser(String usename) throws ResourceNotFoundException, EntityPersistenceException {
+        Role buyerRole = roleService.get(RoleName.ROLE_BUYER);
+
+        User user = new User();
+        user.setUsername(usename);
+        user.setPassword(bCryptPasswordEncoder.encode("password"));
+        user.setEmailAddress("abc@example.com");
+        user.setFirstname("test");
+        user.setLastname("user");
+        user.setEnabled(true);
+        user.setRoles(Collections.singleton(buyerRole));
+        return userService.save(user);
     }
 }

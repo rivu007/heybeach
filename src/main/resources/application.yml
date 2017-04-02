@@ -45,12 +45,11 @@ liquibase:
 # <----- Development profile ------>
 spring:
   profiles: development
-
-datasource:
-      driverClassName: org.h2.Driver
-      url: jdbc:h2:~/heybeachdb
-      username: sa
-      password:
+  datasource:
+        driverClassName: org.h2.Driver
+        url: jdbc:h2:~/heybeachdb
+        username: sa
+        password:
 
 ---
 # <----- Production profile ------>
@@ -66,8 +65,12 @@ spring:
 spring:
   profiles: test
 
-datasource:
-      driverClassName: org.h2.Driver
-      url: jdbc:h2:~/heybeachdb
-      username: sa
-      password:
+  datasource:
+        driverClassName: org.h2.Driver
+        url: jdbc:h2:~/heybeachdb
+        username: sa
+        password:
+
+jwt:
+  header: Authorization
+  expiration: 60000

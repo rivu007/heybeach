@@ -128,7 +128,7 @@ public class JwtTokenUtil implements Serializable {
         return generateToken(claims);
     }
 
-    String generateToken(Map<String, Object> claims) {
+    public String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate())
