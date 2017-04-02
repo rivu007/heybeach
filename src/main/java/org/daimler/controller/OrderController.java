@@ -60,7 +60,7 @@ public class OrderController {
     @RequestMapping(method = RequestMethod.PUT, path = "{orderId}")
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.OK)
-    public Order update(@RequestParam("orderId") Long orderId, @RequestBody Order order) throws EntityPersistenceException {
+    public Order update(@PathVariable("orderId") Long orderId, @RequestBody Order order) throws EntityPersistenceException {
         //TODO: update the order entity and return the updated one
         return new Order();
     }
@@ -76,7 +76,7 @@ public class OrderController {
     @RequestMapping(method = RequestMethod.PATCH, path = "{orderId}/cancel")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    public Order cancelOrder(@RequestParam("orderId") Long orderId) throws OrderNotFoundException {
+    public Order cancelOrder(@PathVariable("orderId") Long orderId) throws OrderNotFoundException {
 
         //TODO: implement the logic
         return new Order();
@@ -85,7 +85,7 @@ public class OrderController {
     @RequestMapping(method = RequestMethod.GET, path = "{orderId}/status")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    public OrderStatus getStatus(@RequestParam("orderId") Long orderId) throws OrderNotFoundException {
+    public OrderStatus getStatus(@PathVariable("orderId") Long orderId) throws OrderNotFoundException {
 
         //TODO: implement the logic
         return new Order().getOrderStatus();
@@ -94,7 +94,7 @@ public class OrderController {
     @RequestMapping(method = RequestMethod.GET, path = "{orderId}/items")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    public Set<OrderItem> orderDetails(@RequestParam("orderId") Long orderId) throws ItemNotFoundException, OrderNotFoundException {
+    public Set<OrderItem> orderDetails(@PathVariable("orderId") Long orderId) throws ItemNotFoundException, OrderNotFoundException {
 
         //TODO: implement the logic
         return new Order().getOrderItems();
