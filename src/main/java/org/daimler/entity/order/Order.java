@@ -1,5 +1,6 @@
 package org.daimler.entity.order;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -31,10 +32,10 @@ public class Order {
     @Temporal(TemporalType.TIMESTAMP)
     private Date paidDate;
 
-    @Column(name = "ORDER_STATUS", length = 10)
+    @Column(name = "ORDER_STATUS")
     @NotNull
-    @Size(max = 10)
-    private Integer orderStatus;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
 
     @Column(name = "TRANSACTION_ID", unique = true, nullable = false)
     @NotNull
