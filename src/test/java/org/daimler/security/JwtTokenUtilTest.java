@@ -11,7 +11,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for JwtTokenUtil class
+ * Test for {@link JwtTokenUtil}
  *
  * @author Abhilash Ghosh
  */

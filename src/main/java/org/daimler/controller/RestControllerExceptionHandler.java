@@ -74,7 +74,9 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
     }
 
     /**
-     * This is generic method which handles @see RuntimeException
+     * This is generic method which handles:
+     *
+     * @see RuntimeException
      */
     @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<Object> handleInternalServerException(RuntimeException ex, WebRequest request) {
@@ -96,7 +98,6 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
                         .map(FieldError::new)
                         .collect(Collectors.toList())
         );
-
         return handleExceptionInternal(ex, error, headers, status, request);
     }
 
@@ -112,7 +113,6 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
 
         RestError error = bodyToError(body, status, ex);
         LOG.error(ex.getMessage(), ex);
-
         // this is single entry point to ensure that error response always contains our rest error
         return new ResponseEntity<>(error, headers, status);
     }
@@ -121,7 +121,6 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         if (body instanceof RestError) {
             return (RestError) body;
         }
-
         return new RestError(status, ex.getMessage());
     }
 }
