@@ -83,6 +83,13 @@
             <artifactId>liquibase-core</artifactId>
         </dependency>
 
+        <!-- AWS S3 -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.11.23</version>
+        </dependency>
+
         <!-- lombok plugin -->
         <dependency>
             <groupId>org.projectlombok</groupId>

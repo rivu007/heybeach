@@ -44,6 +44,12 @@ spring:
     username: sa
     password:
 
+amazon:
+  region: eu-central-1
+  access_key_id: xxxxx              # Replace with your AWS access_key_id
+  secret_key_id: xxxxx              # Replace with your AWS secret_key_id
+  s3:
+    bucket: s3-photo-dev-store-bucket
 ---
 # <----- Production profile ------>
 spring:
@@ -53,6 +59,12 @@ spring:
     username: xxxxx                      # Replace xxxx with database username
     password: xxxxx                      # Replace xxxx with database password
 
+amazon:
+  region: ${REGION}
+  access_key_id: xxxxx              # Replace with your AWS access_key_id
+  secret_key_id: xxxxx              # Replace with your AWS secret_key_id
+  s3:
+    bucket: s3-photo-prod-store-bucket
 ---
 # <----- test profile ------>
 spring:
@@ -63,6 +75,13 @@ spring:
     url: jdbc:h2:~/heybeachtestdb;AUTO_SERVER=TRUE
     username: sa
     password:
+
+amazon:
+  region: ${REGION}
+  access_key_id: xxxxx              # Replace with your AWS access_key_id
+  secret_key_id: xxxxx              # Replace with your AWS secret_key_id
+  s3:
+    bucket: s3-photo-test-store-bucket
 
 jwt:
   header: Authorization

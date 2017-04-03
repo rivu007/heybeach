@@ -6,7 +6,6 @@ import org.daimler.entity.order.OrderStatus;
 import org.daimler.error.EntityPersistenceException;
 import org.daimler.error.ItemNotFoundException;
 import org.daimler.error.OrderNotFoundException;
-import org.daimler.security.JwtAuthenticationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

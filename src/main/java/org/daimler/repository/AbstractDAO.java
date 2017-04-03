@@ -12,8 +12,8 @@ import java.util.List;
  *
  * @author abhilash.ghosh
  */
-public abstract class AbstractDAO<T extends Serializable>{
-    private Class< T > clazz;
+public abstract class AbstractDAO<T extends Serializable> {
+    private Class<T> clazz;
 
     @Autowired
     private SessionFactory sessionFactory;

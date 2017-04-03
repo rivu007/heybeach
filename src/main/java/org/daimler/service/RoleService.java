@@ -9,7 +9,6 @@ import java.util.Set;
 /**
  * @author abhilash.ghosh
  */
-
 public interface RoleService {
 
     /**
