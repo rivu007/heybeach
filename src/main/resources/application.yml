@@ -50,6 +50,10 @@ amazon:
   secret_key_id: xxxxx              # Replace with your AWS secret_key_id
   s3:
     bucket: s3-photo-dev-store-bucket
+
+cache:
+  ttl: 60                           # in seconds
+  maxItems: 1000
 ---
 # <----- Production profile ------>
 spring:

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Set;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -44,7 +45,7 @@ public class PictureController {
     @PreAuthorize("hasAuthority('ROLE_SELLER')")
     @RequestMapping(method = RequestMethod.POST, path = "/hashtag")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void saveHashtag(@RequestBody Photo photo) throws EntityPersistenceException {
-        //TODO: implement the logic
+    public void saveHashtag(@RequestParam("photoId") int photoId, @RequestBody Set<String> tags) throws EntityPersistenceException {
+        mediaService.saveHashTags(photoId, tags);
     }
 }

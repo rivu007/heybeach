@@ -6,6 +6,7 @@ import org.daimler.error.MediaUploadException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
+import java.util.Set;
 
 /**
  * @author abhilash.ghosh
@@ -31,4 +32,13 @@ public interface MediaService {
      * @throws EntityPersistenceException
      */
     Photo save(Photo photo) throws EntityPersistenceException;
+
+    /**
+     * Stores the reference of the photo
+     *
+     * @param photoId to be persisted as the key in the cache
+     * @param tags list to save
+     * @throws EntityPersistenceException
+     */
+    void saveHashTags(int photoId, Set<String> tags) throws EntityPersistenceException;
 }

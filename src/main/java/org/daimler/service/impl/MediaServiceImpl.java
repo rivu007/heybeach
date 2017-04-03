@@ -6,6 +6,7 @@ import org.daimler.error.MediaUploadException;
 import org.daimler.repository.PhotoDAO;
 import org.daimler.repository.S3MediaRepository;
 import org.daimler.service.MediaService;
+import org.daimler.util.cache.InMemoryCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Set;
 
 /**
  * @author abhilash.ghosh
@@ -27,6 +29,9 @@ public class MediaServiceImpl implements MediaService {
 
     @Resource
     private PhotoDAO photoDAO;
+
+    @Autowired
+    InMemoryCache<Integer, Set<String>> inMemoryCache;
 
     private S3MediaRepository mediaRepository;
 
@@ -69,5 +74,20 @@ public class MediaServiceImpl implements MediaService {
     @Override
     public Photo save(Photo photo) throws EntityPersistenceException {
         return photoDAO.save(photo);
+    }
+
+    /**
+     * Stores the reference of the photo
+     *
+     * @param photoId to be persisted as the key in the cache
+     * @param tags list to save
+     * @throws EntityPersistenceException
+     */
+    @Override
+    public void saveHashTags(int photoId, Set<String> tags) throws EntityPersistenceException {
+        //save the tags in cache
+        inMemoryCache.put(photoId, tags);
+
+        //TODO: Persists the hashtags in the database
     }
 }
