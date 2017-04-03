@@ -1,6 +1,9 @@
 package org.daimler.service.impl;
 
+import org.daimler.entity.picture.Photo;
+import org.daimler.error.EntityPersistenceException;
 import org.daimler.error.MediaUploadException;
+import org.daimler.repository.PhotoDAO;
 import org.daimler.repository.S3MediaRepository;
 import org.daimler.service.MediaService;
 import org.slf4j.Logger;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -20,6 +24,9 @@ import java.net.URL;
 public class MediaServiceImpl implements MediaService {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @Resource
+    private PhotoDAO photoDAO;
 
     private S3MediaRepository mediaRepository;
 
@@ -37,13 +44,14 @@ public class MediaServiceImpl implements MediaService {
      * @return a path to the stored resource
      * @throws MediaUploadException when error occurred during the file upload
      */
-    public URL upload(MultipartFile multipartFile, String pictureId, String userId) throws MediaUploadException {
+    @Override
+    public URL upload(MultipartFile multipartFile, Integer pictureId, Integer userId) throws MediaUploadException {
         if (multipartFile.isEmpty()) {
             throw new MediaUploadException("File is empty");
         }
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            return mediaRepository.uploadPhoto(inputStream, buildFileKey(pictureId, userId));
+            return mediaRepository.uploadPhoto(inputStream, pictureId.toString());
 
         } catch (IOException | InterruptedException e) {
             log.error("Picture upload failed.", e);
@@ -51,7 +59,15 @@ public class MediaServiceImpl implements MediaService {
         }
     }
 
-    private static String buildFileKey(String... keyParts) {
-        return String.join("/", keyParts);
+    /**
+     * Stores the reference of the photo
+     *
+     * @param photo to save
+     * @return persisted photo object
+     * @throws EntityPersistenceException
+     */
+    @Override
+    public Photo save(Photo photo) throws EntityPersistenceException {
+        return photoDAO.save(photo);
     }
 }

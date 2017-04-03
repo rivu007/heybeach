@@ -1,5 +1,7 @@
 package org.daimler.service;
 
+import org.daimler.entity.picture.Photo;
+import org.daimler.error.EntityPersistenceException;
 import org.daimler.error.MediaUploadException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,5 +21,14 @@ public interface MediaService {
      * @return a path to the stored resource
      * @throws MediaUploadException when error occurred during the file upload
      */
-    URL upload(MultipartFile multipartFile, String pictureId, String userId) throws MediaUploadException;
+    URL upload(MultipartFile multipartFile, Integer pictureId, Integer userId) throws MediaUploadException;
+
+    /**
+     * Stores the reference of the photo
+     *
+     * @param photo to save
+     * @return persisted photo object
+     * @throws EntityPersistenceException
+     */
+    Photo save(Photo photo) throws EntityPersistenceException;
 }

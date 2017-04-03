@@ -1,6 +1,6 @@
 package org.daimler.controller;
 
-import org.daimler.entity.order.Order;
+import org.daimler.entity.picture.Photo;
 import org.daimler.error.EntityPersistenceException;
 import org.daimler.error.MediaUploadException;
 import org.daimler.service.MediaService;
@@ -18,7 +18,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 
 /**
- * Rest controller for managing Picture Photo.
+ * Rest controller for Media operations.
  */
 @RestController
 @RequestMapping("/pictures")
@@ -31,20 +31,20 @@ public class PictureController {
     @RequestMapping(method = POST, path = "/upload")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file,
-                                         @RequestParam("pictureId") String pictureId,
-                                         @RequestParam("userId") String userId)
-            throws MediaUploadException, URISyntaxException {
-        URL location = mediaService.upload(file, pictureId, userId);
+                                         @RequestBody Photo photo)
+            throws MediaUploadException, URISyntaxException, EntityPersistenceException {
+        URL filePath = mediaService.upload(file, photo.getId(), photo.getUserId());
+        mediaService.save(photo);
 
         return ResponseEntity
-                .created(location.toURI())
-                .body(location.toString());
+                .created(filePath.toURI())
+                .body(filePath.toString());
     }
 
     @PreAuthorize("hasAuthority('ROLE_SELLER')")
     @RequestMapping(method = RequestMethod.POST, path = "/hashtag")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void saveHashtag(@RequestBody Order order) throws EntityPersistenceException {
+    public void saveHashtag(@RequestBody Photo photo) throws EntityPersistenceException {
         //TODO: implement the logic
     }
 }
